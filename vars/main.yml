@@ -1,0 +1,8 @@
+---
+
+perccli_rpm_path: 'Linux'
+perccli_rpm: 'perccli-007.0127.0000.0000-1.noarch.rpm'
+perccli_archive: 'perccli_7.1-007.0127_linux.tar.gz'
+perccli_url: "https://dl.dell.com/FOLDER04470715M/1/{{ perccli_archive }}"
+perccli_sha1: '0a8e7edcf6deb3ee9499f5c3bdfb7aaabe08dbc0'
+perccli_bin: '/opt/MegaRAID/perccli/perccli64'

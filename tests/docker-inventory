@@ -1,0 +1,2 @@
+[localhost]
+ansible-role-perccli ansible_connection=docker

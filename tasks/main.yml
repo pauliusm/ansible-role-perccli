@@ -1,0 +1,54 @@
+---
+
+- name: "Check if {{ perccli_bin}} exists"
+  stat:
+    path: "{{ perccli_bin }}"
+  register: perccli
+
+- name: "Done if {{ perccli_bin}} exists" 
+  meta: end_play
+  when: perccli.stat.exists
+
+- name: Create tempfile
+  tempfile:
+    state: file
+    suffix: perccli
+  register: tmpfile
+  tags: setup
+
+- name: Download PERCCLI
+  get_url:
+    url: "{{ perccli_url }}"
+    dest: "{{ tmpfile.path }}"
+    checksum: "sha1:{{ perccli_sha1 }}"
+  tags: download
+
+- name: "Extract PERCCLI"
+  unarchive:
+    src: "{{ tmpfile.path }}"
+    dest: "{{ tmpfile.path | dirname }}"
+    creates: "{{ perccli_rpm }}"
+    remote_src: yes
+  tags: extract
+
+- name: "Install PERCCLI"
+  yum:
+     name: "{{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}"
+     state: present
+  when: ansible_os_family == "RedHat"
+
+- name: "Install alien"
+  apt:
+     name: alien
+     state: present
+  when: ansible_os_family == "Debian"
+
+- name: "Install PERCCLI via alien"
+  command: "alien -i {{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}" 
+  when: ansible_os_family == "Debian"
+
+- name: Remove tempfile
+  file:
+    path: "{{ tmpfile.path }}"
+    state: absent
+  tags: setup
