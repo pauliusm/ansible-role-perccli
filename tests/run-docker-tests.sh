@@ -12,6 +12,6 @@ then
   RESULT=1
   docker exec -it $DOCKER_CONTAINER_NAME /bin/sh
 fi
-#docker stop $DOCKER_CONTAINER_NAME
-#docker rm $DOCKER_CONTAINER_NAME
+docker stop $DOCKER_CONTAINER_NAME
+docker rm $DOCKER_CONTAINER_NAME
 exit $RESULT

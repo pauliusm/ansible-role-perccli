@@ -5,7 +5,7 @@
     path: "{{ perccli_bin }}"
   register: perccli
 
-- name: "Done if {{ perccli_bin}} exists" 
+- name: "Done if {{ perccli_bin}} exists"
   meta: end_play
   when: perccli.stat.exists
 
@@ -21,6 +21,7 @@
     url: "{{ perccli_url }}"
     dest: "{{ tmpfile.path }}"
     checksum: "sha1:{{ perccli_sha1 }}"
+    validate_certs: "{{ perccli_validate_certs }}"
   tags: download
 
 - name: "Extract PERCCLI"
@@ -44,7 +45,7 @@
   when: ansible_os_family == "Debian"
 
 - name: "Install PERCCLI via alien"
-  command: "alien -i {{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}" 
+  command: "alien -i {{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}"
   when: ansible_os_family == "Debian"
 
 - name: Remove tempfile
@@ -52,3 +53,12 @@
     path: "{{ tmpfile.path }}"
     state: absent
   tags: setup
+
+- name: "Check if {{ perccli_bin}} present"
+  stat:
+    path: "{{ perccli_bin }}"
+  register: perccli_present
+
+- name: "Fail if {{ perccli_bin}} absent"
+  fail:
+  when: not perccli_present.stat.exists

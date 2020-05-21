@@ -6,3 +6,4 @@ perccli_archive: 'perccli_7.1-007.0127_linux.tar.gz'
 perccli_url: "https://dl.dell.com/FOLDER04470715M/1/{{ perccli_archive }}"
 perccli_sha1: '0a8e7edcf6deb3ee9499f5c3bdfb7aaabe08dbc0'
 perccli_bin: '/opt/MegaRAID/perccli/perccli64'
+perccli_validate_certs: "{{ ( ansible_distribution_major_version == '6' and ansible_os_family == 'RedHat' ) | ternary( 'false', 'true' ) }}"
