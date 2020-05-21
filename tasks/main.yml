@@ -6,7 +6,7 @@
   register: perccli
 
 - name: "Done if {{ perccli_bin }} exists"
-  meta: end_play
+  meta: end_host
   when: perccli.stat.exists
 
 - name: Create tempfile
