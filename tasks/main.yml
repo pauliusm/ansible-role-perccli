@@ -5,16 +5,13 @@
     path: "{{ perccli_bin }}"
   register: perccli
 
-- name: "Done if {{ perccli_bin }} exists"
-  meta: end_host
-  when: perccli.stat.exists
-
 - name: Create tempfile
   tempfile:
     state: file
     suffix: perccli
   register: tmpfile
   tags: setup
+  when: not perccli.stat.exists
 
 - name: Download PERCCLI
   get_url:
@@ -23,6 +20,7 @@
     checksum: "sha1:{{ perccli_sha1 }}"
     validate_certs: "{{ perccli_validate_certs }}"
   tags: download
+  when: not perccli.stat.exists
 
 - name: "Extract PERCCLI"
   unarchive:
@@ -31,28 +29,30 @@
     creates: "{{ perccli_rpm }}"
     remote_src: yes
   tags: extract
+  when: not perccli.stat.exists
 
 - name: "Install PERCCLI"
   yum:
      name: "{{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}"
      state: present
-  when: ansible_os_family == "RedHat"
+  when: ansible_os_family == "RedHat" and not perccli.stat.exists
 
 - name: "Install alien"
   apt:
      name: alien
      state: present
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and not perccli.stat.exists
 
 - name: "Install PERCCLI via alien"
   command: "alien -i {{ tmpfile.path | dirname }}/{{ perccli_rpm_path }}/{{ perccli_rpm }}"
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" and not perccli.stat.exists
 
 - name: Remove tempfile
   file:
     path: "{{ tmpfile.path }}"
     state: absent
   tags: setup
+  when: not perccli.stat.exists
 
 - name: "Check if {{ perccli_bin }} present"
   stat:
